@@ -7,9 +7,9 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 @app.route("/whatsapp-webhook", methods=["POST"])
 def whatsapp_webhook():
-    data = request.json
-    user_message = data.get("Body", "")
-    sender_number = data.get("From", "")
+    user_message = request.values.get("Body", "")
+sender_number = request.values.get("From", "")
+
     
     if not user_message:
         return jsonify({"status": "error", "message": "No message received"}), 400
@@ -31,7 +31,8 @@ def whatsapp_webhook():
         )
         final_bill = response.choices[0].message.content
         print(f"Sending Bill to {sender_number}:\n{final_bill}")
-        return jsonify({"status": "success", "reply": final_bill}), 200
+        return f"<Response><Message>{final_bill}</Message></Response>", 200, {'Content-Type': 'text/xml'}
+
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"status": "error", "message": "Failed to process AI request"}), 500
