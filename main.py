@@ -8,13 +8,11 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 @app.route("/whatsapp-webhook", methods=["POST"])
 def whatsapp_webhook():
     user_message = request.values.get("Body", "")
-sender_number = request.values.get("From", "")
+    sender_number = request.values.get("From", "")
 
-    
     if not user_message:
         return jsonify({"status": "error", "message": "No message received"}), 400
-
-    try:
+try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
